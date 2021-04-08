@@ -6,7 +6,7 @@ const Events        = require('../Events');
 const Database      = require('./database/databaseController');
 const database      = new Database('/database.json');
 const port          = process.env.PORT || 3000;
-const connectedUsers = {};
+var connectedUsers = {};
 
 let userTemplate = {
     username: "",
@@ -47,32 +47,44 @@ io.on('connection', socket => {
         else
         {
             console.info(`Criando usuário '${data.username}'`)
-            user = database.createUser(data.username, data.genre, true);
+            user = database.createUser(data.username, data.genre);
             success = true;
         }
 
         if(success){
+            socket.emit(Events.SEND_USER_DATA, user);
+
+            for ([usr, data] of Object.entries(connectedUsers))
+            {
+                // Emite para o socket as pessoas conectadas
+                socket.emit(Events.SEND_CHAT_STATE, {username: data.username, genre: data.genre})
+
+                // Emite para todos que existe uma nova pessoa
+                data.socket.emit(Events.NEW_USER, user);
+            }
+
             userTemplate.username = user.username;
             userTemplate.genre    = user.genre;
             userTemplate.socket   = socket;
 
             connectedUsers[user.username] = { ...userTemplate};
-            socket.emit(Events.SEND_USER_DATA, user);
-            io.emit(Events.NEW_USER, user);
         }
     });
 
 
     socket.on('disconnect', () => {
+
+        
         for (const [username, data] of Object.entries(connectedUsers))
         {
             if (data.socket.id == socket.id)
             {
-                database.setUserData(username, "connected", false);
+                io.emit(Events.USER_LOGOUT, username);
 
                 console.log(`Usuário '${username}' desconectando`);
                 delete connectedUsers[username];
             }
+
         }
     })
 
@@ -119,4 +131,6 @@ function getSocketByUsername(username)
             return data.socket
         }
     }
+
+    return null;
 }

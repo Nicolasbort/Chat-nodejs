@@ -73,7 +73,8 @@ const Events = {
     MESSAGE_RECIEVED: "MESSAGE_RECIEVED",
     SEND_MESSAGE_PRIVATE: "SEND_MESSAGE_PRIVATE",
     RECIEVE_MESSAGE_PRIVATE: "RECIEVE_MESSAGE_PRIVATE",
-    LOGOUT: "LOGOUT",
+    SEND_CHAT_STATE: "SEND_CHAT_STATE",
+    USER_LOGOUT: "USER_LOGOUT",
     VERIFY_USER: "VERIFY_USER",
     SEND_USER_DATA:"SEND_USER_DATA",
     NEW_USER: "NEW_USER",
@@ -162,6 +163,7 @@ export default {
             {
                 if (that.friends[i].username == data.from)
                 {
+                    that.friends[i].lastMessage = data.message;
                     that.friends[i].history.push({
                         isIncoming: true,
                         message: data.message,
@@ -190,6 +192,27 @@ export default {
 
                 that.friends.push( that.createFriend(data.from, "user-man", data.message, history) )
             }
+        })
+
+
+
+        // NAtualiza o novo usuario no chat
+        this.socket.on(Events.NEW_USER, user => {
+            that.friends.push( that.createFriend(user.username, user.genre, "") );
+        })
+
+
+        // Recebe os clients conectados ao entrar no chat
+        this.socket.on(Events.SEND_CHAT_STATE, connectedUsers => {
+            console.log("conneceted users: ")
+            console.table(connectedUsers)
+            that.friends.push( that.createFriend(connectedUsers.username, connectedUsers.genre, "") )
+        })
+
+        // Usuario desconecotu
+        this.socket.on(Events.USER_LOGOUT, usrname => {
+            that.deleteFriend(usrname);
+            
         })
 
     },
@@ -297,6 +320,20 @@ export default {
                 history: history
             }
         },
+
+
+        deleteFriend( username )
+        {
+            // alert(username)
+            this.friends.forEach( (user, index) =>{
+                if (user.username == username)
+                {
+                    this.friends.splice(index, 1)
+                }
+            })
+
+            console.table(this.friends);
+        },  
 
         userExists(username)
         {

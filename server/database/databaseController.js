@@ -32,12 +32,11 @@ class JSONDatabaseController
         this.saveFile();
     }
 
-    createUser(userName, userGenre, userConnected)
+    createUser(userName, userGenre)
     {
         this.data.users[userName] = {
             username: userName,
-            genre: userGenre,
-            connected: userConnected,
+            genre: userGenre
         };
         this.saveFile();
         console.log(this.data.users[userName]);
