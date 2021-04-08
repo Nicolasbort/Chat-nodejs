@@ -35,7 +35,13 @@ export default {
         return {
             socket: null,
             isLogin: true,
-            user: null
+            user: null,
+            // Teste:
+            // isLogin: false,
+            // user: {
+            //     username: "iago",
+            //     genre: "user-man"
+            // }
         }
     },
 
@@ -48,8 +54,7 @@ export default {
         this.initSocket();
 
         this.socket.on(Events.SEND_USER_DATA, data => {
-            console.log(`Send User Data`)
-            console.table(data);
+            console.log(`Send User Data ${data}`)
         })
     },
 
@@ -64,10 +69,6 @@ export default {
 
 
         setUser( user ) {
-            console.log("Setting user to")
-            console.table(user);
-            // this.socket.emit(Events.USER_LOGIN);
-
             this.user = user;
         },
 

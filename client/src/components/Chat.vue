@@ -1,75 +1,70 @@
 <template>
-    <div class="container">
-        <h3 class=" text-center">Messaging</h3>
-        <div class="messaging">
-            <div class="inbox_msg">
-                <div class="inbox_people">
-                    <!-- <div class="headind_srch"> -->
-                        <div class="row my-3 mx-2">
-                            <div class="col-4">
-                                <div class="recent_heading text-center">
-                                    <h4>{{ user.username }}</h4>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <!-- <div class="srch_bar w-100">
-                                    <div class="stylish-input-group">
-                                        <input type="text" class="search-bar w-100" placeholder="Search" >
-                                        <span class="input-group-addon">
-                                            <button type="button"> <i class="fa fa-search" ></i> </button>
-                                        </span>
-                                    </div>
-                                </div> -->
-                                <div class="srch_bar w-100">
-                                    <div class="stylish-input-group">
-                                        <input v-model="friendInputName" type="text" class="search-bar w-100" placeholder="Novo amigo" >
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="col-2 text-center">
-                                <button v-on:click="addNewFriend()" type="button" class="btn btn-primary" ><i class="fa fa-plus-circle" ></i></button>
-                            </div>
-                        </div>
-                    <!-- </div> -->
-                    <div class="inbox_chat">
-
-                        <div v-for="(value, index) in friends" :key="index" :id="`friend-${index}`" v-on:click="changeCurrenChat($event)">
-
-                            <ChatList v-if="index == indexChatAtual" :isActive="true" :username="value.username" :lastMessage="value.lastMessage" :date="value.date" :imageName="`${value.genre}.png`"/>
-
-                            <ChatList v-else :isActive="false" :username="value.username" :lastMessage="value.lastMessage" :date="value.date" :imageName="`${value.genre}.png`"/>
-
-                        </div>
-
-                    </div>
-                </div>
-                <div class="mesgs">
-                    <div class="msg_history">
-
-                        <div v-for="(value, index) in friends[indexChatAtual].history" :key="index">
-                        
-                            <ChatIncoming v-if="value.isIncoming" :message="value.message" :date="value.date" :imageName="`${user.genre}.png`" />
-
-                            <ChatOutgoing v-else :message="value.message" :date="value.date" />
-
-                        </div>   
-
-                    </div>
-
-                    <ChatInput @sendMessage="sendMessageSocket" />
-                    
-                </div>
+    <!--MainContainer-->
+    <div class="container mt-10">
+        <!--Row-->
+        <div class="row rounded shadow mt-5 h-100">
+          <!--Col Contacts-->
+          <div class="col-3 border-end p-0  mh-100 d-flex flex-column">
+            <div class="p-3 bg-green text-white d-flex align-items-center">
+              <img :src="require(`../assets/${user.genre}.png`)" alt="User image" style="width:32px;height:32px;">
+              <div class="ms-3">
+                <h5 class="mb-0"> {{ user.username }} </h5>
+              </div>
             </div>
+            <div class="p-3 d-flex flex-column overflow-auto mh-100">
+              <!--Add Contact-->
+              <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Adicionar contato..." v-model="friendInputName" ref="inputText">
+                <button class="btn btn-outline-green" type="button" v-on:click="addNewFriend()" ref="buttonSend">
+                  <i class="fa fa-plus"></i>
+                </button>
+              </div>
+              <!--Contacts List-->
+              <ul class="list-group flex-fill overflow-auto mh-100">
+
+                <ChatList 
+                v-for="(value, index) in friends" 
+                :key="index" 
+                :isActive="index == indexChatAtual" 
+                :id="`friend-${index}`"
+                :username="value.username" 
+                :lastMessage="value.lastMessage" 
+                :date="value.date" 
+                :imageName="`${value.genre}.png`"
+                v-on:click="changeCurrenChat($event)"
+                />
+                
+
+              </ul>
+            </div>
+          </div>
+          <!--Col Messages-->
+          <div class="col-9 p-3 d-flex flex-column mh-100">
+            <!--Messages-->
+            <div class="flex-fill overflow-auto  mh-100" ref="divMessages">
+              <!--Sent message-->
+
+                <div v-for="(value, index) in friends[indexChatAtual].history" :key="index">
+                
+                    <ChatIncoming v-if="value.isIncoming" :message="value.message" :date="value.date" :imageName="`${user.genre}.png`" />
+
+                    <ChatOutgoing v-else :message="value.message" :date="value.date" />
+
+                </div>  
+                 
+            </div>
+            <!--Input-->
+            <ChatInput @sendMessage="sendMessageSocket" />
+          </div>
         </div>
     </div>
 </template>
 
 <script>
 import ChatIncoming from "./ChatIncoming";
-import ChatOutgoing from "./ChatOutgoing";
 import ChatList from "./ChatList";
 import ChatInput from "./ChatInput";
+import ChatOutgoing from './ChatOutgoing.vue';
 
 const Events = {
     USER_LOGIN:"USER_LOGIN",
@@ -118,6 +113,24 @@ export default {
                     date: "25 Dec"
                     }
                 ]
+            },   
+            {
+                username: "Mariazinha",
+                lastMessage: "ahahaha",
+                date: "23 Abril",
+                genre: "user-man",
+                history: [
+                    {
+                    isIncoming: true,
+                    message: "321321",
+                    date: "21 Jan"
+                    },
+                    {
+                    isIncoming: false,
+                    message: "ewqeqqe",
+                    date: "25 Dec"
+                    }
+                ]
             }
         ],
       }
@@ -132,7 +145,14 @@ export default {
 
     mounted() {
       
-        var that = this
+        var callback = this.addFriend;
+        this.$refs.inputText.addEventListener("keyup", function(event) {
+          if(event.keyCode === 13){
+            callback();
+          }
+        })
+        
+        var that = this;
         this.socket.on(Events.RECIEVE_MESSAGE_PRIVATE, data => {
 
             console.log(`Private message from '${data.from}' containing '${data.message}'`);
@@ -147,6 +167,11 @@ export default {
                         message: data.message,
                         date: data.date
                     })
+
+                    
+                    if(i == this.indexChatAtual){
+                      this.$refs.divMessages.scrollTop = this.$refs.divMessages.scrollHeight - this.$refs.divMessages.clientHeight;
+                    }
 
                     foundFriend = true;
 
@@ -163,7 +188,7 @@ export default {
                     date: data.date
                 }]
 
-                that.friends.push( that.createFriend(data.from, "user-man", history) )
+                that.friends.push( that.createFriend(data.from, "user-man", data.message, history) )
             }
         })
 
@@ -197,6 +222,8 @@ export default {
             }
 
             this.insertHistoryMessage(historyData);
+            this.friends[this.indexChatAtual].lastMessage = msg
+            this.friends[this.indexChatAtual].date = stringDate
 
             let data = {
                 from: this.user.username,
@@ -222,10 +249,16 @@ export default {
                 if (this.friends[i].username === data.friend)
                 {
                     this.friends[i].history.push({
-                    isIncoming: data.isIncoming,
-                    message: data.message,
-                    date: data.date
+                        isIncoming: data.isIncoming,
+                        message: data.message,
+                        lastMessage: data.message,
+                        date: data.date
                     })
+
+                    
+                    if(i == this.indexChatAtual){
+                      this.$refs.divMessages.scrollTop = this.$refs.divMessages.scrollHeight - this.$refs.divMessages.clientHeight;
+                    }
 
                     return;
                 }
@@ -242,21 +275,40 @@ export default {
                 return;
             }
 
+            if (this.userExists(this.friendInputName))
+            {
+                alert('Amigo ja adicionado');
+                return;
+            }
+
             this.friends.push( this.createFriend(this.friendInputName, "user-man") )
 
             console.table(this.friends);
         },
 
 
-        createFriend( username, genre, history = [] )
+        createFriend( username, genre, lastMessage = "", history = [] )
         {
             return {
                 username: username,
-                lastMessage: "",
+                lastMessage: lastMessage,
                 date: "",
                 genre: genre,
                 history: history
             }
+        },
+
+        userExists(username)
+        {
+            for ( var friend of this.friends )
+            {
+                if (friend.username == username)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
@@ -268,145 +320,68 @@ export default {
 
 <style>
 
-  .inbox_people {
-    background: #f8f8f8 none repeat scroll 0 0;
-    float: left;
-    overflow: hidden;
-    width: 40%; border-right:1px solid #c4c4c4;
+  .overflow-auto::-webkit-scrollbar {
+    width: 10px;
   }
-  .inbox_msg {
-    border: 1px solid #c4c4c4;
-    clear: both;
-    overflow: hidden;
-  }
-  .top_spac{ margin: 20px 0 0;}
-
-
-  .recent_heading {float: left; width:40%;}
-  .srch_bar {
-    display: inline-block;
-    text-align: right;
-    width: 60%;
-  }
-  .headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
-
-  .recent_heading h4 {
-    color: #05728f;
-    font-size: 21px;
-    margin: auto;
-  }
-  .srch_bar input{ 
-    border:1px solid #cdcdcd;
-    border-width:0 0 1px 0;
-    width:80%;
-    padding:2px 0 4px 6px;
-    background:none;
   
+  .overflow-auto::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px #2a9d8f50;
+  }
+  
+  .overflow-auto::-webkit-scrollbar-thumb {
+    border-radius: 15px;
+    background-color: #2a9d8f;
   }
 
-  .srch_bar .input-group-addon button {
-    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-    border: medium none;
-    padding: 0;
-    color: #707070;
-    font-size: 18px;
-  }
-  .srch_bar .input-group-addon { margin: 0 0 0 -27px;}
-
-  .chat_ib h5{ font-size:15px; color:#464646; margin:0 0 8px 0;}
-  .chat_ib h5 span{ font-size:13px; float:right;}
-  .chat_ib p{ font-size:14px; color:#989898; margin:auto}
-  .chat_img {
-    float: left;
-    width: 11%;
-  }
-  .chat_ib {
-    float: left;
-    padding: 0 0 0 15px;
-    width: 88%;
+  .bg-light {
+    background-color: #ebebeb !important;
   }
 
-  .chat_people{ overflow:hidden; clear:both;}
-  .chat_list {
-    border-bottom: 1px solid #c4c4c4;
-    margin: 0;
-    padding: 18px 16px 10px;
-  }
-  .inbox_chat { height: 550px; overflow-y: scroll;}
-
-  .active_chat{ background:#dfdfdf;}
-
-  .incoming_msg_img {
-    display: inline-block;
-    width: 6%;
-  }
-  .received_msg {
-    display: inline-block;
-    padding: 0 0 0 10px;
-    vertical-align: top;
-    width: 92%;
-  }
-  .received_withd_msg p {
-    background: #ebebeb none repeat scroll 0 0;
-    border-radius: 3px;
-    color: #646464;
-    font-size: 14px;
-    margin: 0;
-    padding: 5px 10px 5px 12px;
-    width: 100%;
-  }
-  .time_date {
-    color: #747474;
-    display: block;
-    font-size: 12px;
-    margin: 8px 0 0;
-  }
-  .received_withd_msg { width: 57%;}
-  .mesgs {
-    float: left;
-    padding: 30px 15px 0 25px;
-    width: 60%;
+  .btn:focus {
+    box-shadow: 0 0 0 0.25rem #2a9d8f50 !important;
   }
 
-  .sent_msg p {
-    background: #05728f none repeat scroll 0 0;
-    border-radius: 3px;
-    font-size: 14px;
-    margin: 0; color:#fff;
-    padding: 5px 10px 5px 12px;
-    width:100%;
-  }
-  .outgoing_msg{ overflow:hidden; margin:26px 0 26px;}
-  .sent_msg {
-    float: right;
-    width: 46%;
-  }
-  .input_msg_write input {
-    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
-    border: medium none;
-    color: #4c4c4c;
-    font-size: 15px;
-    min-height: 48px;
-    width: 100%;
+  .btn-outline-green{
+    border-color: #2a9d8f !important;
+    color: #2a9d8f !important;
   }
 
-  .type_msg {border-top: 1px solid #c4c4c4;position: relative;}
-  .msg_send_btn {
-    background: #05728f none repeat scroll 0 0;
-    border: medium none;
-    border-radius: 50%;
-    color: #fff;
-    cursor: pointer;
-    font-size: 17px;
-    height: 33px;
-    position: absolute;
-    right: 0;
-    top: 11px;
-    width: 33px;
+  .btn-outline-green:hover{
+    background-color: #2a9d8f !important;
+    border-color: white !important;
+    color: white !important; 
   }
-  .messaging { padding: 0 0 50px 0;}
-  .msg_history {
-    height: 516px;
-    overflow-y: auto;
+
+  .btn-outline-green:active:focus {
+      box-shadow: 0 0 0 0.25rem #2a9d8f !important;
+  }
+
+  .btn-outline-green:active{
+    background-color: #2a9d8f !important;
+  }
+
+
+  .btn-ouline-green:focus{
+    box-shadow: 0 0 0 0.25rem #2a9d8f50 !important;
+  }
+
+  .border-green{
+    border-color: #2a9d8f !important;
+
+  }
+  .text-green{
+    color: #2a9d8f !important;
+
+  }
+  .bg-green {
+    background-color: #2a9d8f !important;
+  }
+
+  small {
+    font-size: 0.75rem !important;
+  }
+
+  .container {
+    height: 100%;
   }
 </style>

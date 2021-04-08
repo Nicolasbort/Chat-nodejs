@@ -1,18 +1,15 @@
 <template>
-    <div class="chat_list" v-bind:class="isActive ? 'active_chat' : ''">
-        <div class="chat_people">
-            <div class="chat_img"> 
-                <img class="image-responsive w-100" :src="require(`../assets/${imageName}`)" alt="User image">
-            </div>
-            <div class="chat_ib">
-                <h5>
-                    {{ username }}
-                    <span class="chat_date">{{ date }}</span>
-                </h5>
-                <p>{{ lastMessage }}</p>
+    <li v-bind:class="isActive ? 'active-chat' : '' " class="chat-contact list-group-item d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <img :src="require(`../assets/${imageName}`)" alt="User image" style="width:32px;height:32px;">
+            <div class="ms-3">
+                <h6 class="mb-0">{{ username }}</h6>
+                <small class="text-muted">{{ lastMessage }}</small>
             </div>
         </div>
-    </div>
+        <small class="text-muted">{{ date }}</small>
+    </li>
+
 </template>
 
 <script>
@@ -32,9 +29,18 @@ export default {
 
 <style scoped>
 
-    .chat_list:hover {
+    .chat-contact:hover {
         cursor: pointer;
         opacity: 0.8;
+    }
+
+    .active-chat {
+        border-left: 6px solid #2a9d8f;
+    }
+
+    .active-chat h6{
+        color: #2a9d8f;
+        font-weight: bold;
     }
 
 </style>
