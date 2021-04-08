@@ -5,7 +5,7 @@ const Events        = require('../Events');
 // JSONDatabase
 const Database      = require('./database/databaseController');
 const database      = new Database('/database.json');
-const port = process.env.PORT || 3000;
+const port          = process.env.PORT || 3000;
 const connectedUsers = {};
 
 let userTemplate = {
@@ -16,7 +16,7 @@ let userTemplate = {
 
 
 io.on('connection', socket => {
-    console.log(`Socket ${socket.id} connected`);
+    console.info(`Socket ${socket.id} inicializado. Usuário na tela de login.`)
 
     //
     // @params Username && Genre
@@ -35,42 +35,35 @@ io.on('connection', socket => {
         {
             if(connectedUsers[data.username])
             {
-                console.log("Usuario já esta logado")
+                console.warn(`Usuário '${data.username}' já está logado!`)
                 socket.emit(Events.SEND_USER_DATA, false);
             }
             else
             {
-                console.log("Usuario não esta logado")
+                console.info(`Usuário ${data.username} não está logado!  Logando...`)
                 success = true;
             }
         }
         else
         {
-            console.log("Criando usuario ", data.username)
+            console.info(`Criando usuário '${data.username}'`)
             user = database.createUser(data.username, data.genre, true);
             success = true;
         }
 
         if(success){
-            database.setUserData(user.username, "connected", true);
-
             userTemplate.username = user.username;
             userTemplate.genre    = user.genre;
             userTemplate.socket   = socket;
 
-            connectedUsers[user.username] = userTemplate;
+            connectedUsers[user.username] = { ...userTemplate};
             socket.emit(Events.SEND_USER_DATA, user);
             io.emit(Events.NEW_USER, user);
-
-            console.log(connectedUsers[user.username].socket.id);
         }
     });
 
 
     socket.on('disconnect', () => {
-
-        console.log(`Socket id ${socket.id} disconnecting`)
-
         for (const [username, data] of Object.entries(connectedUsers))
         {
             if (data.socket.id == socket.id)
@@ -92,10 +85,10 @@ io.on('connection', socket => {
         console.log(`Message private from ${data.from} to ${data.to}`);
 
         // let socket_sender   = getSocketByUsername( data.from );
-        let socket_reciever = getSocketByUsername( data.to );
+        let socket_receiver = getSocketByUsername( data.to );
 
         // Usuario desconectado
-        if (!socket_reciever)
+        if (!socket_receiver)
         {
             console.log(`Usuario ${data.to} desconectado!`);
             return;
@@ -107,7 +100,7 @@ io.on('connection', socket => {
             date: data.date
         } 
 
-        socket_reciever.emit(Events.RECIEVE_MESSAGE_PRIVATE, data_to_send)
+        socket_receiver.emit(Events.RECIEVE_MESSAGE_PRIVATE, data_to_send)
 
     });
 });

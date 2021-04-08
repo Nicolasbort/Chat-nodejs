@@ -99,11 +99,6 @@ export default {
 
         friendInputName: "",
 
-
-        state: {
-          user: null
-        },
-
         indexChatAtual: 0,
         friends: [           
             {
@@ -125,29 +120,6 @@ export default {
                 ]
             }
         ],
-            // {
-            //     username: "mariazinha",
-            //     lastMessage: "Oi",
-            //     date: "23 Jan",
-            //     genre: "user-woman",
-            //     history: [
-            //         {
-            //         isIncoming: true,
-            //         message: "Ola",
-            //         date: "21 Jan"
-            //         },
-            //         {
-            //         isIncoming: false,
-            //         message: "Oi",
-            //         date: "25 Dec"
-            //         }
-            //     ]
-            // },
-
-
-
-
-        // ],
       }
     },
 
@@ -193,9 +165,6 @@ export default {
 
                 that.friends.push( that.createFriend(data.from, "user-man", history) )
             }
-
-            console.log(`EVENT: ${Events.RECIEVE_MESSAGE_PRIVATE}`)
-            console.table(data);
         })
 
     },
@@ -207,7 +176,6 @@ export default {
             let chatId = event.currentTarget.id
 
             this.indexChatAtual = chatId.split('-')[1];
-            
         },
 
 
