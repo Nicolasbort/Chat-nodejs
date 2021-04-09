@@ -45,7 +45,6 @@
                 @clickLi="changeCurrentChatContact"
                 @addNewContactButton="addNewContact"
                 />
-                <!-- v-on:click="changeCurrentChat(username)" -->
                 
 
               </ul>
@@ -57,8 +56,7 @@
             <div class="flex-fill overflow-auto  mh-100" ref="divMessages">
               <!--Sent message-->
 
-              <div v-if="chatType == 'group'">
-                <div v-if="user.groups[nameChatAtual]">
+              <div v-if="chatType == 'group' && user.groups[nameChatAtual]">
                   <div v-for="(message, index) in user.groups[nameChatAtual].history" :key="index">
                   
                       <ChatOutgoing v-if="message.from == user.username" :message="message.message" :lastMessageDate="message.date" />
@@ -66,11 +64,9 @@
                       <ChatIncoming v-else :message="message.message" :lastMessageDate="message.date" :isGroup="true" :from="message.from"/>
 
                   </div>  
-                </div>
               </div>
               
-              <div v-else-if="chatType == 'contact'" > 
-                <div v-if="user.contacts[nameChatAtual]">
+              <div v-else-if="chatType == 'contact' && user.contacts[nameChatAtual]" > 
                   <div v-for="(message, index) in user.contacts[nameChatAtual].history" :key="index">
                   
                       <ChatIncoming v-if="message.to == user.username" :message="message.message" :lastMessageDate="message.date" :isGroup="false" from=""/>
@@ -78,7 +74,6 @@
                       <ChatOutgoing v-else :message="message.message" :lastMessageDate="message.date" />
 
                   </div>  
-                </div>
               </div>
                 
             </div>

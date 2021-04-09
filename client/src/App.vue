@@ -6,7 +6,6 @@
 
       <Login v-if="isLogin" @userLoginSubmit="handleLoginSubmit" />
 
-      <!-- <Chat v-else :socket="socket" :user="user" /> -->
       <Chat v-else :user="user"  @sendMessageRoot="sendMessageServer" @addNewContact="addNewContact"/>
 
     </div>
@@ -14,43 +13,18 @@
 </template>
 
 <script>
+/* eslint-disable */ 
+
 import io from "socket.io-client"
 import Chat from './components/Chat'
 import Login from './components/Login'
 import ToastElement from './components/Toast.vue'
+
 import { Toast } from 'bootstrap'
+import EVENTS from '../../Events'
+
 
 const serverURL = "http://localhost:3000"
-const EVENTS = {
-    //User events
-    NEW_USER:                   "NEW_USER",
-    USER_LOGIN:                 "USER_LOGIN",
-    USER_LOGOUT:                "USER_LOGOUT",
-    USER_DISCONNECTED:          "USER_DISCONNECTED",
-
-    //Contatos
-    ADD_CONTACT:                "ADD_CONTACT",
-    PUSH_CONTACT:               "PUSH_CONTACT",
-    
-    //Message privada
-    SEND_MESSAGE_PRIVATE:       "SEND_MESSAGE_PRIVATE",
-    RECEIVE_MESSAGE_PRIVATE:    "RECEIVE_MESSAGE_PRIVATE",
-
-    //Mensagem de grupo
-    SEND_MESSAGE_GROUP:         "SEND_MESSAGE_GROUP",
-    RECEIVE_MESSAGE_GROUP:      "RECEIVE_MESSAGE_GROUP",
-
-    //Dados
-    SEND_CHAT_STATE:            "SEND_CHAT_STATE",
-    SEND_USER_DATA:             "SEND_USER_DATA",
-
-    //Menssagens servidor
-    SHOW_TOAST:                 "SHOW_TOAST",
-
-    //Eventos de grupo  
-    CREATE_GROUP:               "CREATE_GROUP",
-    ADD_GROUP_MEMBER:           "ADD_GROUP_MEMBER",
-}
 
 
 export default {
@@ -84,7 +58,7 @@ export default {
 
             this.socket = io(serverURL, {transports:['websocket']});
 
-            
+            // Recebe informações sobre o usuário digitado no login
             this.socket.on(EVENTS.SEND_USER_DATA, user => {
                 // Usuario já conectado
                 if (!user)
@@ -95,9 +69,6 @@ export default {
 
                 that.user = user;
                 that.isLogin = false;
-
-                console.table(user)
-                console.table(user.groups);
             })
 
             // Recebe menssagem enviada por outro usuário
@@ -117,18 +88,11 @@ export default {
                 this.user.contacts[message.from].history.push(message); 
             });
 
+            // Recebe a menssagem enviada em um grupo
             this.socket.on(EVENTS.RECEIVE_MESSAGE_GROUP, message => { 
 
                 console.log("RECEIVE_MESSAGE_GROUP:")
                 console.table(message);
-
-                // let message = {
-                //     from: this.user.username,
-                //     to: this.nameChatAtual,
-                //     message: msg,
-                //     date: stringDate
-                // }
-
 
                 if(!(message.to in this.user.groups))
                 {
@@ -164,11 +128,10 @@ export default {
 
         //Envia mensagem pro servidor
         sendMessageServer(newMessage, chatType){
-            if(chatType == 'group'){
-                this.socket.emit(EVENTS.SEND_MESSAGE_GROUP, newMessage);
-            }else{
-                this.socket.emit(EVENTS.SEND_MESSAGE_PRIVATE, newMessage);
-            }
+
+            let Event = chatType == 'group' ? EVENTS.SEND_MESSAGE_GROUP : EVENTS.SEND_MESSAGE_PRIVATE;
+
+            this.socket.emit(Event, newMessage);                
         },
         
         //Cuida do login
