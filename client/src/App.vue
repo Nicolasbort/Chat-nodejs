@@ -129,7 +129,7 @@ export default {
         //Envia mensagem pro servidor
         sendMessageServer(newMessage, chatType){
 
-            let Event = chatType == 'group' ? EVENTS.SEND_MESSAGE_GROUP : EVENTS.SEND_MESSAGE_PRIVATE;
+            let Event = chatType == 'groups' ? EVENTS.SEND_MESSAGE_GROUP : EVENTS.SEND_MESSAGE_PRIVATE;
 
             this.socket.emit(Event, newMessage);                
         },

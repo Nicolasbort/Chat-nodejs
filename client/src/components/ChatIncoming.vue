@@ -1,7 +1,7 @@
 <template> 
     <div class="d-flex align-items-top justify-content-start mb-1">
         <div class="ms-2 position-relative end-0" style="max-width: 75%">
-            <p v-if="isGroup" class="mb-0 text-muted">
+            <p v-if="chatType == 'groups'" class="mb-0 text-muted">
                 <b>{{from}}</b>
             </p>
             <p v-if="message.includes(`#128`)" class="bg-light rounded text-break p-2 mb-0 fs-3">
@@ -23,7 +23,7 @@ export default {
         message: String,
         lastMessageDate: String,
         from: String,
-        isGroup: Boolean
+        chatType: String
     }
 }
 </script>

@@ -56,22 +56,12 @@
             <div class="flex-fill overflow-auto  mh-100" ref="divMessages">
               <!--Sent message-->
 
-              <div v-if="chatType == 'group' && user.groups[nameChatAtual]">
-                  <div v-for="(message, index) in user.groups[nameChatAtual].history" :key="index">
+              <div v-if="user[chatType][nameChatAtual]">
+                  <div v-for="(message, index) in user[chatType][nameChatAtual].history" :key="index">
                   
                       <ChatOutgoing v-if="message.from == user.username" :message="message.message" :lastMessageDate="message.date" />
 
-                      <ChatIncoming v-else :message="message.message" :lastMessageDate="message.date" :isGroup="true" :from="message.from"/>
-
-                  </div>  
-              </div>
-              
-              <div v-else-if="chatType == 'contact' && user.contacts[nameChatAtual]" > 
-                  <div v-for="(message, index) in user.contacts[nameChatAtual].history" :key="index">
-                  
-                      <ChatIncoming v-if="message.to == user.username" :message="message.message" :lastMessageDate="message.date" :isGroup="false" from=""/>
-
-                      <ChatOutgoing v-else :message="message.message" :lastMessageDate="message.date" />
+                      <ChatIncoming v-else :message="message.message" :lastMessageDate="message.date" :from="message.from" :chatType="chatType"/>
 
                   </div>  
               </div>
@@ -102,7 +92,7 @@ export default {
       return {
         inputTextNewContact: "",
         nameChatAtual: "",
-        chatType: ""
+        chatType: "contacts"
       }
     },
 
@@ -118,19 +108,17 @@ export default {
         // Muda o contato aberto
         changeCurrentChatContact( username ) { 
           this.nameChatAtual = username 
-          this.chatType = 'contact';
+          this.chatType = 'contacts';
         },
 
         changeCurrentChatGroup( groupname ) { 
           this.nameChatAtual = groupname;
-          this.chatType = 'group';
+          this.chatType = 'groups';
         },
 
         // Envia a menssagem para o contato aberto
         sendMessageChat(msg)
         {
-            console.log(`${msg} from ChatInput`)
-
             let date = new Date();
             let stringDate = `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}` 
 
@@ -143,7 +131,7 @@ export default {
 
             this.insertHistoryMessage(newMessage);
 
-            if(this.chatType == 'group'){
+            if(this.chatType == 'groups'){
               this.$parent.user.groups[this.nameChatAtual].lastMessage       = msg
               this.$parent.user.groups[this.nameChatAtual].lastMessageDate   = stringDate
             }else{
@@ -167,7 +155,7 @@ export default {
             var contactUserTo = newMessage.to;
 
             // Adiciona ao histórico do usuário para quem envivou a msg
-            if(this.chatType == 'contact'){
+            if(this.chatType == 'contacts'){
               this.$parent.user.contacts[this.nameChatAtual].history.push(newMessage);
             }
 
