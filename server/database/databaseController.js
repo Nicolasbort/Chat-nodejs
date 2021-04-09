@@ -21,27 +21,67 @@ class JSONDatabaseController
         fs.writeFileSync(this.filePath, JSON.stringify(this.data));
     }
 
-    getUserData(userId)
-    {
-        return this.data.users[userId];
-    }
+    getUserData( username ) { return this.data.users[username]; }
 
-    setUserData(username, key, value)
-    {
-        this.data.users[username][key] = value;
-        this.saveFile();
-    }
 
-    createUser(userName, userGenre)
+    createUser(username, imageUrl)
     {
-        this.data.users[userName] = {
-            username: userName,
-            genre: userGenre
+        this.data.users[username] = {
+            username: username,
+            imageUrl: imageUrl,
+            contacts: {},
+            groups: {}
         };
         this.saveFile();
-        console.log(this.data.users[userName]);
-        return this.data.users[userName];
+        return this.data.users[username];
     }
+
+    addUserContact( username, usernameContact, contact )
+    {
+        this.data.users[username].contacts[usernameContact] = contact;
+        this.saveFile();
+    }
+    
+    removeUserContact(username, usernameContact){
+        delete this.data.users[username].contacts[usernameContact];
+    }
+
+    createGroup( groupName, imageUrl )
+    {
+        this.data.groups[groupName] = {
+            lastMessage:            "",
+            lastMessageDate:        "",
+            imageUrl:               imageUrl,
+            history:                [],
+            users:                  []
+        }
+
+        this.saveFile();
+    }
+
+    addUserGroup( username, groupName )
+    {
+        var group = this.data.groups[groupName];
+
+        if(!group.users.includes(username)) { group.users.push(username); }
+
+        this.data.users[username].groups[groupName] = {
+            lastMessageDate:   group.lastMessage,
+            lastMessage:       group.lastMessageDate,
+            imageUrl:          group.imageUrl,
+            history:           group.history
+        }
+        this.saveFile();
+    }
+
+
+
+    
+
+    // cria um grupo
+    // ele adiciona o grupo no banco
+    // adiciona o usuario no grupo
+    // adiciona o grupo nos usuarios do grupo
 }
 
 module.exports = JSONDatabaseController;

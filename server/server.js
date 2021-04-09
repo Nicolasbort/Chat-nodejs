@@ -8,129 +8,150 @@ const database      = new Database('/database.json');
 const port          = process.env.PORT || 3000;
 var connectedUsers = {};
 
-let userTemplate = {
-    username: "",
-    genre: "",
-    socket: null
-}
-
-
-io.on('connection', socket => {
-    console.info(`Socket ${socket.id} inicializado. Usuário na tela de login.`)
-
-    //
-    // @params Username && Genre
-    //
-    socket.on(Events.USER_LOGIN, data => {
-
-        if (!data.username || !data.genre) {
-            console.log(`Username ou Genero vazios! Username: ${data.username}. Genere: ${data.genre}`);
-            return;
-        }
-
-        var user = database.getUserData(data.username);
-        var success = false;
-        
-        if(user)
-        {
-            if(connectedUsers[data.username])
-            {
-                console.warn(`Usuário '${data.username}' já está logado!`)
-                socket.emit(Events.SEND_USER_DATA, false);
-            }
-            else
-            {
-                console.info(`Usuário ${data.username} não está logado!  Logando...`)
-                success = true;
-            }
-        }
-        else
-        {
-            console.info(`Criando usuário '${data.username}'`)
-            user = database.createUser(data.username, data.genre);
-            success = true;
-        }
-
-        if(success){
-            socket.emit(Events.SEND_USER_DATA, user);
-
-            for ([usr, data] of Object.entries(connectedUsers))
-            {
-                // Emite para o socket as pessoas conectadas
-                socket.emit(Events.SEND_CHAT_STATE, {username: data.username, genre: data.genre})
-
-                // Emite para todos que existe uma nova pessoa
-                data.socket.emit(Events.NEW_USER, user);
-            }
-
-            userTemplate.username = user.username;
-            userTemplate.genre    = user.genre;
-            userTemplate.socket   = socket;
-
-            connectedUsers[user.username] = { ...userTemplate};
-        }
-    });
-
-
-    socket.on('disconnect', () => {
-
-        
-        for (const [username, data] of Object.entries(connectedUsers))
-        {
-            if (data.socket.id == socket.id)
-            {
-                io.emit(Events.USER_LOGOUT, username);
-
-                console.log(`Usuário '${username}' desconectando`);
-                delete connectedUsers[username];
-            }
-
-        }
-    })
-
-    
-    //
-    //  @params From && To && Message && Date
-    //
-    socket.on(Events.SEND_MESSAGE_PRIVATE, data => {
-        
-        console.log(`Message private from ${data.from} to ${data.to}`);
-
-        // let socket_sender   = getSocketByUsername( data.from );
-        let socket_receiver = getSocketByUsername( data.to );
-
-        // Usuario desconectado
-        if (!socket_receiver)
-        {
-            console.log(`Usuario ${data.to} desconectado!`);
-            return;
-        }
-
-        let data_to_send = {
-            from: data.from,
-            message: data.message,
-            date: data.date
-        } 
-
-        socket_receiver.emit(Events.RECIEVE_MESSAGE_PRIVATE, data_to_send)
-
-    });
-});
-
-
-app.listen(port, () => { console.log(`Server listening at port ${port}`) })
-
-
 
 function getSocketByUsername(username)
 {
-    for (const [usr, data] of Object.entries(connectedUsers))
-    {
-        if (usr == username)
-        {
-            return data.socket
-        }
-    }
-
+    // Previnir erro 'Cannot read property 'socket' of undefined'
+    if ( connectedUsers[username] )
+        return connectedUsers[username].socket;
+    
     return null;
 }
+
+function getUsernameBySocketId( socketId )
+{
+    var found = null;
+    Object.keys(connectedUsers).forEach(function(key, index){
+        if(connectedUsers[key].socket.id == socketId){
+            found = key; 
+        }
+    });
+    return found;
+}
+
+io.on('connection', socket => {
+    // Socket conectado
+    console.info(`Socket ${socket.id} inicializado. Usuário na tela de login.`)
+
+    // Tentativa login no cliente
+    socket.on(Events.USER_LOGIN, loginData => { 
+        //Se ele já ta conectado
+        if(connectedUsers[loginData.username]){
+            console.warn(`Usuário '${loginData.username}' já está logado!`)
+            socket.emit(Events.SHOW_TOAST,  {type: "danger", message: `Usuário ${loginData.username} já conectado!`} );
+            return;
+        }
+        
+        // Pega dados da database, se não existir cria novo usuário
+        var user = database.getUserData(loginData.username);
+        if(!user){
+            user = database.createUser(loginData.username, loginData.imageUrl);
+            database.addUserGroup( loginData.username, "Todos" );
+        }
+
+        // Atualiza usuários conectados
+        connectedUsers[user.username] = {
+            username: user.username,
+            imageUrl: user.imageUrl,
+            socket: socket
+        };
+
+        // Insere em seus grupos
+        Object.keys(user.groups).forEach(function(key){
+            socket.join(key);
+        });
+
+        // Envia o usuário para o cliente
+        socket.emit(Events.SEND_USER_DATA, user);
+    });
+
+    
+    // Tentavi de adição do contato
+    socket.on(Events.ADD_CONTACT, contactUsername => {
+        // Pega o username do socket que chamou o evento
+        var username = getUsernameBySocketId( socket.id );
+        // Procura contato na database
+        var contactData = database.getUserData(contactUsername);
+
+        if ( username == contactUsername) {
+            socket.emit(Events.SHOW_TOAST,  {type: "info", message: `A solidão é complicada, mas você não pode adicionar você mesmo...`} );
+            return;
+        }
+
+        // Se contato existe
+        if (contactData)
+        {
+            var contact = { lastMessageDate: "", lastMessage: "", imageUrl: contactData.imageUrl, history: [] };
+            // Insere na lista de contatos do socket que chamou o evento
+            database.addUserContact(username, contactUsername, contact)
+            // Envia para adicionar na lista de contatos do client
+            socket.emit(Events.PUSH_CONTACT, contactUsername, contact);
+            return;
+        }
+        // Enviar toast erro Contato nao existe
+        socket.emit(Events.SHOW_TOAST,  {type: "danger", message: `Usuário '${contactUsername}' não existe!`} );
+    });
+
+    
+    // Recebe a menssagem do usuário 'from' e envia para o usuário 'to' 
+    socket.on(Events.SEND_MESSAGE_PRIVATE, newMessage => {
+        console.log(`Message private from ${newMessage.from} to ${newMessage.to}`);
+        // Encontra o socket do usuário 'to' 
+        let socket_receiver = getSocketByUsername( newMessage.to );
+
+        // Usuario desconectado
+        if (!socket_receiver){
+            socket.emit(Events.SHOW_TOAST,  {type: "info", message: `Usuário ${newMessage.to} está desconectado!`} );
+            return;
+        }
+        
+        // Envia mensagem para o usuário 'to'
+        socket_receiver.emit(Events.RECEIVE_MESSAGE_PRIVATE, newMessage)
+    });
+    
+
+    // Cria grupo
+    socket.on(Events.CREATE_GROUP, (groupName, imageUrl, users) => {
+        /*newGroup = {
+            groupName: 
+            lastMessage:            "",
+            lastMessageDate:        "",
+            imageUrl:               imageUrl,
+            history:                [],
+            users:                  []
+        }*/
+        database.createGroup( groupName, imageUrl );
+
+        for(var user of users){
+            database.addUserGroup( user, groupName );
+            let socketUser = getSocketByUsername( user );
+            socketUser.join(groupName);
+        }
+    });
+
+    // Adiciona um membro no grupo
+    socket.on(Events.ADD_GROUP_MEMBER, (groupName, username) => {
+        database.addUserGroup( username, groupName );
+        let socketUser = getSocketByUsername(username);
+        socketUser.join(groupName);
+    });    
+
+    // Envia uma mensagem para um grupo
+    socket.on(Events.SEND_MESSAGE_GROUP, newMessage => {
+        console.table(newMessage);
+        io.to(newMessage.to).emit(Events.RECEIVE_MESSAGE_GROUP, newMessage);
+    });
+    
+    // Ao deslogar do sistema remove da lista de conectados
+    socket.on('disconnect', () => {
+        let username = getUsernameBySocketId(socket.id)
+        delete connectedUsers[username];
+        console.log(`Usuário '${username}' desconectado`);
+    })
+
+});
+
+// Listen do servidor
+app.listen(port, () => { console.log(`Server listening at port ${port}`) })
+
+

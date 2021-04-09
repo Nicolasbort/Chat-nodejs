@@ -1,13 +1,28 @@
 module.exports = {
-    USER_LOGIN:"USER_LOGIN",
-    USER_DISCONNECTED: "USER_DISCONNECTED",
-    MESSAGE_SENT: "MESSAGE_SENT",
-    MESSAGE_RECIEVED: "MESSAGE_RECIEVED",
-    SEND_MESSAGE_PRIVATE: "SEND_MESSAGE_PRIVATE",
-    RECIEVE_MESSAGE_PRIVATE: "RECIEVE_MESSAGE_PRIVATE",
-    SEND_CHAT_STATE: "SEND_CHAT_STATE",
-    USER_LOGOUT: "USER_LOGOUT",
-    VERIFY_USER: "VERIFY_USER",
-    SEND_USER_DATA:"SEND_USER_DATA",
-    NEW_USER: "NEW_USER",
+    //User events
+    NEW_USER:                   "NEW_USER",
+    USER_LOGIN:                 "USER_LOGIN",
+    USER_LOGOUT:                "USER_LOGOUT",
+    USER_DISCONNECTED:          "USER_DISCONNECTED",
+    ADD_CONTACT:                "ADD_CONTACT",
+    PUSH_CONTACT:               "PUSH_CONTACT",
+    
+    //Message privada
+    SEND_MESSAGE_PRIVATE:       "SEND_MESSAGE_PRIVATE",
+    RECEIVE_MESSAGE_PRIVATE:    "RECEIVE_MESSAGE_PRIVATE",
+
+    //Mensagem de grupo
+    SEND_MESSAGE_GROUP:         "SEND_MESSAGE_GROUP",
+    RECEIVE_MESSAGE_GROUP:      "RECEIVE_MESSAGE_GROUP",
+
+    //Dados
+    SEND_CHAT_STATE:            "SEND_CHAT_STATE",
+    SEND_USER_DATA:             "SEND_USER_DATA",
+
+    //Menssagens servidor
+    SHOW_TOAST:                 "SHOW_TOAST",
+
+    //Eventos de grupo  
+    CREATE_GROUP:               "CREATE_GROUP",
+    ADD_GROUP_MEMBER:           "ADD_GROUP_MEMBER",
 }

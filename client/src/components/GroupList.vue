@@ -1,27 +1,27 @@
 <template>
     <li v-bind:class="isActive ? 'active-chat' : '' " class="chat-contact list-group-item">
-        <div class="d-flex align-items-center justify-content-between" v-on:click="$emit('clickLi', username)">
+        <div class="d-flex align-items-center justify-content-between" v-on:click="$emit('clickLi', groupname)">
             <div class="d-flex align-items-center">
-                <img :src="require(`../assets/avatar_${imageUrl}.png`)" alt="User image" style="width:32px;height:32px;">
+                <img :src="require(`../assets/group_${imageUrl}.png`)" alt="User image" style="width:32px;height:32px;">
                 <div class="ms-3">
-                    <h6 class="mb-0">{{ username }}</h6>
+                    <h6 class="mb-0">{{ groupname }}</h6>
                     <small class="text-muted">{{ lastMessage }}</small>
                 </div>
             </div>
             <small class="text-muted">{{ lastMessagDate }}</small>
         </div>
-        <button v-if="imageUrl == '0'" v-on:click="$emit('addNewContactButton', username)" class="btn btn-outline-green">Adicionar aos contatos</button>
+        <button v-if="imageUrl == '0'" v-on:click="$emit('addNewContactButton', groupname)" class="btn btn-outline-green">Adicionar aos contatos</button>
     </li>
 
 </template>
 
 <script>
 export default {
-    name: 'ChatList',
-
+    name: 'GroupList',
+    
     props: {
         isActive: Boolean,
-        username: String,
+        groupname: String,
         lastMessage: String,
         lastMessagDate: String,
         imageUrl: String

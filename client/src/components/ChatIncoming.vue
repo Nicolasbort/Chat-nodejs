@@ -1,21 +1,16 @@
-<template>
-    <!-- <div class="d-flex align-items-top w-100">
-        <img :src="require(`../assets/${imageName}`)" alt="User image" style="width:32px;height:32px;">
-        <div class="ms-2 w-100">
-        <p class="bg-light rounded text-break p-2 mb-0" style="max-width:75%;">
-            {{ message }}
-        </p>
-        <small class="text-muted">{{ date }}</small>
-        </div>
-    </div> -->
-    
-    
+<template> 
     <div class="d-flex align-items-top justify-content-start mb-1">
         <div class="ms-2 position-relative end-0" style="max-width: 75%">
-            <p class="bg-light rounded text-break p-2 mb-0">
+            <p v-if="isGroup" class="mb-0 text-muted">
+                <b>{{from}}</b>
+            </p>
+            <p v-if="message.includes(`#128`)" class="bg-light rounded text-break p-2 mb-0 fs-3">
                 {{ message }}
             </p>
-            <small class="text-muted float-start">{{ date }}</small>
+            <p v-else class="bg-light rounded text-break p-2 mb-0">
+                {{ message }}
+            </p>
+            <small class="text-muted float-start">{{ lastMessageDate }}</small>
         </div>
     </div>
 </template>
@@ -25,9 +20,10 @@ export default {
     name: 'ChatIncoming',
 
     props: {
-        imageName: String,
         message: String,
-        date: String
+        lastMessageDate: String,
+        from: String,
+        isGroup: Boolean
     }
 }
 </script>

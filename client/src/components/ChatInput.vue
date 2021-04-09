@@ -1,17 +1,43 @@
 <template>
-    <div class="align-self-end w-100">
+    <div class="align-self-end w-100" >
+        <div class="collapse" id="collapseEmojis">
+            <div class="card card-body">
+                <div class="row fs-4">
+                    <!--First Row-->
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128512;')">&#128512;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128513;')">&#128513;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128514;')">&#128514;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128515;')">&#128515;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128516;')">&#128516;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128517;')">&#128517;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128518;')">&#128518;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128519;')">&#128519;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128520;')">&#128520;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128521;')">&#128521;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128522;')">&#128522;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128523;')">&#128523;</a>
+                    <!--Second Row-->
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128524;')">&#128524;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128525;')">&#128525;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128526;')">&#128526;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128527;')">&#128527;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128528;')">&#128528;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128529;')">&#128529;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128530;')">&#128530;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128531;')">&#128531;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128532;')">&#128532;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128533;')">&#128533;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128534;')">&#128534;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128151;')">&#128151;</a>
+                </div>
+            </div>
+        </div>
         <div class="input-group">
-            <button class="btn btn-outline-secondary " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-outline-secondary " data-bs-toggle="collapse" href="#collapseEmojis" role="button" aria-expanded="false" aria-controls="collapseExample" :disabled="isDisabled">
                 <i class="fa fa-smile"></i>
             </button>
-            <ul class="dropdown-menu">
-                <a class="dropdown-item" href="#" v-on:click="sendEmoji('😀')">😀 Feliz</a>
-                <a class="dropdown-item" href="#" v-on:click="sendEmoji('😭')">😭 Triste</a>
-                <a class="dropdown-item" href="#" v-on:click="sendEmoji('👽')">👽 Alien</a>
-                <a class="dropdown-item" href="#" v-on:click="sendEmoji('💖')">💖 Coração</a>
-            </ul>
-            <input type="text" class="form-control" v-model="inputText" placeholder="Digite uma mensagem..." ref="inputText">
-            <button class="btn btn-outline-green" type="button" id="button-addon2" v-on:click="sendMessage()" ref="buttonSend">
+            <input type="text" class="form-control" v-model="inputText" placeholder="Digite uma mensagem..." ref="inputText" :disabled="isDisabled">
+            <button class="btn btn-outline-green" type="button" id="button-addon2" v-on:click="sendMessage()" ref="buttonSend" :disabled="isDisabled">
                 <i class="fa fa-paper-plane"></i>
             </button>
         </div>
@@ -22,22 +48,15 @@
 export default {
     name: 'ChatInput',
 
+    props: {
+        isDisabled: Boolean
+    },
+
     data() {
         return {
             inputText: ""
         }
     },
-
-    mounted: function(){
-        var callback = this.sendMessage;
-        this.$refs.inputText.addEventListener("keyup", function(event) {
-            if (event.keyCode === 13) {
-                event.preventDefault();
-                callback();
-            }
-        });
-    },
-
     methods: {
         sendEmoji(emoji){
             this.$emit('sendMessage', emoji)
@@ -47,9 +66,7 @@ export default {
                 console.log("input vazio")
                 return;
             }
-
             this.$emit('sendMessage', this.inputText)
-
             this.inputText = "";
         }
     }

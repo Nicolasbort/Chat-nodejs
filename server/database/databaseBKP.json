@@ -1,0 +1,13 @@
+{
+    "users":{
+    },
+    "groups":{
+        "Todos": {
+            "lastMessage":            "",
+            "lastMessageDate":        "",
+            "imageUrl":               "4",
+            "history":                [],
+            "users":                  []
+        }
+    }
+}
