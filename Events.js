@@ -20,7 +20,7 @@ module.exports = {
     SEND_CHAT_STATE:            "SEND_CHAT_STATE",
     SEND_USER_DATA:             "SEND_USER_DATA",
 
-    //Menssagens servidor
+    //Mensagens servidor
     SHOW_TOAST:                 "SHOW_TOAST",
 
     //Eventos de grupo  
