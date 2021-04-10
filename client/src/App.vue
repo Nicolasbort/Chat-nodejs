@@ -73,7 +73,7 @@ export default {
                 that.isLogin = false;
             })
 
-            // Recebe menssagem enviada por outro usuário
+            // Recebe mensagem enviada por outro usuário
             this.socket.on(EVENTS.RECEIVE_MESSAGE_PRIVATE, message => { 
 
                 // Criar um usuário anonimo caso o usuário que enviou não seja um contato do usuário recebedor
@@ -102,7 +102,7 @@ export default {
                 console.table(message);
             });
 
-            // Recebe a menssagem enviada em um grupo
+            // Recebe a mensagem enviada em um grupo
             this.socket.on(EVENTS.RECEIVE_MESSAGE_GROUP, message => { 
 
                 console.log("RECEIVE_MESSAGE_GROUP:")

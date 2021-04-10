@@ -29,7 +29,7 @@ function getUsernameBySocketId( socketId )
     return found;
 }
 
-// Verifica se é admin e se for envia o evento de toast para o front contendo o tipo (success, warning, etc) e a menssagem 
+// Verifica se é admin e se for envia o evento de toast para o front contendo o tipo (success, warning, etc) e a mensagem 
 function isAdmin(username, toastType, toastMessage, socket)
 {
     if (username == "admin"){
@@ -131,7 +131,7 @@ io.on('connection', socket => {
     });
 
     
-    // Recebe a menssagem do usuário 'from' e envia para o usuário 'to' 
+    // Recebe a mensagem do usuário 'from' e envia para o usuário 'to' 
     socket.on(Events.SEND_MESSAGE_PRIVATE, newMessage => {
         console.log(`Message private from ${newMessage.from} to ${newMessage.to}`);
         // Encontra o socket do usuário 'to' 

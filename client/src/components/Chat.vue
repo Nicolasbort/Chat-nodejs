@@ -147,7 +147,7 @@ export default {
           this.chatType = 'groups';
         },
 
-        // Envia a menssagem para o contato aberto
+        // Envia a mensagem para o contato aberto
         sendMessageChat(msg)
         {
             var date = new Date();
@@ -173,7 +173,7 @@ export default {
         },
 
 
-        // Insere 'newMessage' no 'history' de pra quem for enviada a menssagem
+        // Insere 'newMessage' no 'history' de pra quem for enviada a mensagem
         insertHistoryMessage(newMessage)
         {
             console.log("New message:");
@@ -186,7 +186,7 @@ export default {
               this.$parent.user.contacts[this.nameChatAtual].history.push(newMessage);
             }
 
-            // Desce o scrollbar quando uma menssagem for enviada
+            // Desce o scrollbar quando uma mensagem for enviada
             this.$refs.divMessages.scrollTop = this.$refs.divMessages.scrollHeight;
         },
 
@@ -230,12 +230,6 @@ export default {
             this.$parent.showToast( 'warning', "Você não pode sair  do chat 'Todos'" );
             return;
           }
-
-          // if ( this.user.username == "admin")
-          // {
-          //   this.$parent.showToast("warning", "O Admin não pode excluir contatos ou sair de grupos!");
-          //   return;
-          // }
 
           delete this.user[this.chatType][this.nameChatAtual];
           this.$emit('deleteContactOrGroup', this.nameChatAtual, this.chatType);   
