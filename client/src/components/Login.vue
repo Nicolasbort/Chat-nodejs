@@ -10,9 +10,6 @@
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" v-model="inputTextUsername" placeholder="Insira seu nome" required>
                 </div>
-                <div v-bind:class="showError ? '' : 'd-none'" class="alert alert-danger text-center" role="alert">
-                    {{ msgError }}
-                </div>
                 <div class="row mb-4">
                     <div class="col-12">
                         <h3 class="mb-3 text-center text-green">Escolha um avatar</h3>
@@ -43,9 +40,6 @@ export default {
         return {
             inputTextUsername:  '',
             imageUrl:           '1',
-
-            msgError: "",
-            showError: false,
         }
     },
 

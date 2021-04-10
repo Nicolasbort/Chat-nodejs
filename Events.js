@@ -6,6 +6,7 @@ module.exports = {
     USER_DISCONNECTED:          "USER_DISCONNECTED",
     ADD_CONTACT:                "ADD_CONTACT",
     PUSH_CONTACT:               "PUSH_CONTACT",
+    REMOVE_CONTACT:             "REMOVE_CONTACT",
     
     //Message privada
     SEND_MESSAGE_PRIVATE:       "SEND_MESSAGE_PRIVATE",
@@ -25,4 +26,5 @@ module.exports = {
     //Eventos de grupo  
     CREATE_GROUP:               "CREATE_GROUP",
     ADD_GROUP_MEMBER:           "ADD_GROUP_MEMBER",
+    QUIT_GROUP:                 "QUIT_GROUP",
 }

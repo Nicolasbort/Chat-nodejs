@@ -1,5 +1,20 @@
 {
     "users":{
+        "admin": {
+           "username": "admin",
+           "imageUrl": "99",
+           "contacts": {},
+           "groups":   
+           {
+               "Todos": 
+               {
+                    "lastMessageDate":   "",
+                    "lastMessage":       "",
+                    "imageUrl":          "4",
+                    "history":           []
+                }
+            }
+        }
     },
     "groups":{
         "Todos": {
@@ -7,7 +22,7 @@
             "lastMessageDate":        "",
             "imageUrl":               "4",
             "history":                [],
-            "users":                  []
+            "users":                  ["admin"]
         }
     }
 }

@@ -29,11 +29,24 @@
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128533;')">&#128533;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128534;')">&#128534;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128151;')">&#128151;</a>
+                    <!--Third Row-->
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#9917;')">&#9917;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#10060;')">&#10060;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#10067;')">&#10067;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#11088;')">&#11088;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#127773;')">&#127773;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128150;')">&#128150;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128178;')">&#128178;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128286;')">&#128286;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128374;')">&#128374;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128585;')">&#128585;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128761;')">&#128761;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#129302;')">&#129302;</a>
                 </div>
             </div>
         </div>
         <div class="input-group">
-            <button class="btn btn-outline-secondary " data-bs-toggle="collapse" href="#collapseEmojis" role="button" aria-expanded="false" aria-controls="collapseExample" :disabled="isDisabled">
+            <button class="btn btn-outline-secondary " :disabled="isDisabled" v-on:click="toggleCollapse()">
                 <i class="fa fa-smile"></i>
             </button>
             <input type="text" class="form-control" v-model="inputText" placeholder="Digite uma mensagem..." ref="inputText" :disabled="isDisabled">
@@ -45,6 +58,8 @@
 </template>
 
 <script>
+import { Collapse } from 'bootstrap'
+
 export default {
     name: 'ChatInput',
 
@@ -54,10 +69,21 @@ export default {
 
     data() {
         return {
-            inputText: ""
+            inputText: "",
+            collapse: {},
         }
     },
+
+    mounted: function(){
+        
+        let collapseDOM = document.getElementById('collapseEmojis');
+        this.collapse = new Collapse(collapseDOM, { toggle: false});
+    },
+
     methods: {
+        toggleCollapse(){
+            this.collapse.toggle();
+        },
         sendEmoji(emoji){
             this.$emit('sendMessage', emoji)
         },

@@ -4,7 +4,7 @@
             <p v-if="chatType == 'groups'" class="mb-0 text-muted">
                 <b>{{from}}</b>
             </p>
-            <p v-if="message.includes(`#128`)" class="bg-light rounded text-break p-2 mb-0 fs-3">
+            <p v-if="/\p{Extended_Pictographic}/u.test(message)" class="bg-light rounded text-break p-2 mb-0 fs-2">
                 {{ message }}
             </p>
             <p v-else class="bg-light rounded text-break p-2 mb-0">
