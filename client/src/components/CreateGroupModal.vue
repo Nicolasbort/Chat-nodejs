@@ -7,10 +7,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control mb-3" placeholder="Nome do grupo...">
+                <input type="text" v-model="groupname" class="form-control mb-3" placeholder="Nome do grupo...">
                 
-                <h5>Membros</h5>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="mb-3 text-center text-green">Escolha um icone</h5>
+                    </div>
+                    <div class="col-2 mb-3" v-for="n in 6" :key="n">
+                        <label class="d-flex justify-content-center">
+                            <input type="radio" name="icon-selector" v-model="imageUrl" :value="n" checked>
+                            <img class="image-responsive h-75 w-75" :src="require(`../assets/group_${n}.png`)">
+                        </label>
+                    </div>
+                </div>
+
+                <h5 class=" text-center text-green">Selecione os Membros</h5>
                 {{selectedContacts}}
+
                 <ul class="list-group flex-fill overflow-auto mh-100">
                     <li 
                     v-for="(contact, username) in contacts" 
@@ -32,7 +45,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-green">Criar</button>
+                <button type="button" v-on:click="checkGroupInformation" class="btn btn-outline-green">Criar</button>
             </div>
             </div>
         </div>
@@ -45,11 +58,11 @@ export default {
 
     data() {
         return {
+            groupname:        "",
+            imageUrl:         "",
             selectedContacts: [],
         }
     },
-
-    // lista de check inputs ( selecionados ou não )
 
     props: {
         id: String,
@@ -70,7 +83,46 @@ export default {
             }
 
             this.selectedContacts.push(username);
+        },
+
+        checkGroupInformation()
+        {
+            if ( !this.groupname )
+            {
+                this.$parent.showToast('info', 'Insira um nome de grupo')
+                return;
+            }
+
+            this.$emit("createGroup", this.groupname, this.imageUrl, this.selectedContacts);
         }
     }
 }
 </script>
+
+
+<style scoped>
+    /* HIDE RADIO */
+    [type=radio] { 
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* IMAGE STYLES */
+    [type=radio] + img {
+        cursor: pointer;
+        transition: all 125ms ease-in-out;
+    }
+
+    /* CHECKED STYLES */
+    [type=radio]:checked + img {
+        box-shadow: 0px 1px 15px 6px #2a9d8f;
+        border-radius: 100%;
+    }
+
+    [type=radio]:not(:checked) + img {
+        -webkit-filter: grayscale(90%); /* Safari 6.0 - 9.0 */
+        filter: grayscale(90%);
+    }
+</style>

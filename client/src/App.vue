@@ -8,15 +8,13 @@
 
       <Chat v-else :user="user"  @sendMessageRoot="sendMessageServer" @addNewContact="addNewContact" @deleteContactOrGroup="deleteContactOrGroup" ref="chat"/>
 
-      <CreateGroupModal id="modalCreateGroup" :contacts="user.contacts" />
+      <CreateGroupModal id="modalCreateGroup" :contacts="user.contacts" @createGroup="createGroup" />
 
     </div>
 
 </template>
 
 <script>
-/* eslint-disable */ 
-
 import io from "socket.io-client"
 import Chat from './components/Chat'
 import Login from './components/Login'
@@ -60,7 +58,7 @@ export default {
         initSocket() {
             var that = this;
 
-            this.socket = io(serverURL, {transports:['websocket']});
+            this.socket = io(serverURL, {transports:['websocket'], upgrade: false});
 
             // Recebe informações sobre o usuário digitado no login
             this.socket.on(EVENTS.SEND_USER_DATA, user => {
@@ -140,6 +138,19 @@ export default {
             });
 
 
+
+            this.socket.on(EVENTS.PUSH_GROUP, (groupname, imageUrl) => {
+                this.showToast('info', `Grupo '${groupname}' foi criado e você foi adicionado!`);
+
+                this.user.groups[groupname] = {
+                    lastMessage:     "",
+                    lastMessageDate: "",
+                    imageUrl:        imageUrl,
+                    history:         []
+                }
+            })
+
+
             this.socket.on(EVENTS.SHOW_TOAST, toast => { this.showToast( toast.type, toast.message ); });
             
         },
@@ -183,6 +194,11 @@ export default {
                 this.socket.emit(EVENTS.QUIT_GROUP, name);
                 // console.log("Delete group not allowed")
             }
+        },
+
+        createGroup( groupname, imageUrl, selectedUsers )
+        {
+            this.socket.emit(EVENTS.CREATE_GROUP, groupname, imageUrl, selectedUsers)
         }
 
     }

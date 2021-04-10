@@ -47,6 +47,7 @@ export default {
 <style scoped>
     .toast {
         left: 41%;
-        top: 5%
+        top: 5%;
+        z-index: 7000;
     }
 </style>

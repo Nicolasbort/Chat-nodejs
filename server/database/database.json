@@ -4,19 +4,19 @@
             "username": "admin",
             "imageUrl": "99",
             "contacts": {
-                "julia": {
-                    "lastMessageDate": "",
-                    "lastMessage": "",
-                    "imageUrl": "1",
-                    "history": []
-                },
                 "nicolas": {
                     "lastMessageDate": "",
                     "lastMessage": "",
-                    "imageUrl": 4,
+                    "imageUrl": 2,
                     "history": []
                 },
                 "iago": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 3,
+                    "history": []
+                },
+                "joaozinho": {
                     "lastMessageDate": "",
                     "lastMessage": "",
                     "imageUrl": "1",
@@ -29,25 +29,62 @@
                     "lastMessage": "",
                     "imageUrl": "4",
                     "history": []
-                }
-            }
-        },
-        "julia": {
-            "username": "julia",
-            "imageUrl": "1",
-            "contacts": {},
-            "groups": {
-                "Todos": {
+                },
+                "grupo do bolinha": {
                     "lastMessageDate": "",
                     "lastMessage": "",
-                    "imageUrl": "4",
+                    "imageUrl": 6,
+                    "history": []
+                },
+                "aaaaa": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 4,
                     "history": []
                 }
             }
         },
         "nicolas": {
             "username": "nicolas",
-            "imageUrl": 4,
+            "imageUrl": 2,
+            "contacts": {
+                "iago": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 3,
+                    "history": []
+                },
+                "joaozinho": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": "1",
+                    "history": []
+                }
+            },
+            "groups": {
+                "Todos": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": "4",
+                    "history": []
+                },
+                "grupo do bolinha": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 6,
+                    "history": []
+                },
+                "aaaaa": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 4,
+                    "history": []
+                }
+            }
+        },
+        "iago": {
+            "username": "iago",
+            "imageUrl": 3,
             "contacts": {},
             "groups": {
                 "Todos": {
@@ -55,11 +92,17 @@
                     "lastMessage": "",
                     "imageUrl": "4",
                     "history": []
+                },
+                "grupo do bolinha": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 6,
+                    "history": []
                 }
             }
         },
-        "iago": {
-            "username": "iago",
+        "joaozinho": {
+            "username": "joaozinho",
             "imageUrl": "1",
             "contacts": {},
             "groups": {
@@ -67,6 +110,12 @@
                     "lastMessageDate": "",
                     "lastMessage": "",
                     "imageUrl": "4",
+                    "history": []
+                },
+                "aaaaa": {
+                    "lastMessageDate": "",
+                    "lastMessage": "",
+                    "imageUrl": 4,
                     "history": []
                 }
             }
@@ -80,9 +129,31 @@
             "history": [],
             "users": [
                 "admin",
-                "julia",
                 "nicolas",
-                "iago"
+                "iago",
+                "joaozinho"
+            ]
+        },
+        "grupo do bolinha": {
+            "lastMessage": "",
+            "lastMessageDate": "",
+            "imageUrl": 6,
+            "history": [],
+            "users": [
+                "iago",
+                "nicolas",
+                "admin"
+            ]
+        },
+        "aaaaa": {
+            "lastMessage": "",
+            "lastMessageDate": "",
+            "imageUrl": 4,
+            "history": [],
+            "users": [
+                "joaozinho",
+                "nicolas",
+                "admin"
             ]
         }
     }

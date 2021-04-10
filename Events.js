@@ -27,4 +27,5 @@ module.exports = {
     CREATE_GROUP:               "CREATE_GROUP",
     ADD_GROUP_MEMBER:           "ADD_GROUP_MEMBER",
     QUIT_GROUP:                 "QUIT_GROUP",
+    PUSH_GROUP:                 "PUSH_GROUP",
 }

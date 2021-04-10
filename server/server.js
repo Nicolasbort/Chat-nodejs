@@ -51,7 +51,7 @@ io.on('connection', socket => {
         //Se ele já ta conectado
         if(connectedUsers[loginData.username]){
             console.warn(`Usuário '${loginData.username}' já está logado!`)
-            socket.emit(Events.SHOW_TOAST,  {type: "danger", message: `Usuário ${loginData.username} já conectado!`} );
+            socket.emit(Events.SHOW_TOAST,  {type: "danger", message: `Usuário '${loginData.username}' já conectado!`} );
             return;
         }
         
@@ -148,8 +148,8 @@ io.on('connection', socket => {
     });
     
 
-    // Cria grupo
-    socket.on(Events.CREATE_GROUP, (groupName, imageUrl, users) => {
+    // Cria grupo e adiciona os usuários selecionados
+    socket.on(Events.CREATE_GROUP, (groupName, imageUrl, selectedUsers) => {
         /*newGroup = {
             groupName: 
             lastMessage:            "",
@@ -160,10 +160,22 @@ io.on('connection', socket => {
         }*/
         database.createGroup( groupName, imageUrl );
 
-        for(var user of users){
+        let usernameGroupCreator = getUsernameBySocketId( socket.id );
+
+        selectedUsers.push(usernameGroupCreator);
+        selectedUsers.push("admin");
+
+        console.table(selectedUsers);
+
+        // Adiciona os usuários no grupos e atualiza o grupo para os conectados
+        for(var user of selectedUsers){
             database.addUserGroup( user, groupName );
+            
             socketUser = getSocketByUsername( user );
-            socketUser.join(groupName);
+            if (socketUser){
+                socketUser.emit(Events.PUSH_GROUP, groupName, imageUrl)
+                socketUser.join(groupName);
+            }
         }
     });
 
