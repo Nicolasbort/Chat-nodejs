@@ -1,15 +1,13 @@
 <template>
 
-    <div class="h-100">
-
+    <div class="h-100" id="mainAppDiv">
       <ToastElement :toastMessage="toastMessage" :toastType="toastType" />
 
       <Login v-if="isLogin" @userLoginSubmit="handleLoginSubmit" />
 
-      <Chat v-else :user="user"  @sendMessageRoot="sendMessageServer" @addNewContact="addNewContact" @deleteContactOrGroup="deleteContactOrGroup" ref="chat"/>
+      <Chat v-else :user="user"  @sendMessageRoot="sendMessageServer" @addNewContact="addNewContact" @removeContactOrGroup="removeContactOrGroup" @deleteGroup="deleteGroup" @resetDatabase="resetDatabase" ref="chat"/>
 
-      <CreateGroupModal id="modalCreateGroup" :contacts="user.contacts" @createGroup="createGroup" />
-
+      <CreateGroupModal id="modalCreateGroup" :contacts="user.contacts" @createGroup="createGroup"/>
     </div>
 
 </template>
@@ -21,7 +19,7 @@ import Login from './components/Login'
 import ToastElement from './components/Toast.vue'
 import CreateGroupModal from './components/CreateGroupModal.vue'
 
-import { Toast } from 'bootstrap'
+import { Toast, Modal } from 'bootstrap'
 import EVENTS from '../../Events'
 
 
@@ -39,6 +37,9 @@ export default {
 
             toastMessage: "",
             toastType:    "",
+
+            createGroupModal: {},
+            createToast:      {},
         }
     },
 
@@ -53,7 +54,13 @@ export default {
         this.initSocket();
     },
 
+    mounted() {
+        this.createGroupModal = new Modal(document.getElementById('modalCreateGroup'), {})
+        this.createToast      = new Toast(document.querySelector('.toast'), {});
+    },
+
     methods: {
+
         // Inicialização do socket
         initSocket() {
             var that = this;
@@ -98,6 +105,10 @@ export default {
                 this.user.contacts[message.from].history.push(message); 
                 this.user.contacts[message.from].lastMessage = message.message;
                 this.user.contacts[message.from].lastMessageDate = message.date;
+
+                if(message.from != nameChatAtual)
+                    this.user.contacts[message.from]["showPill"] = true;
+                
                 console.log("Received")
                 console.table(message);
             });
@@ -118,8 +129,12 @@ export default {
                     }
                 }
 
+                var nameChatAtual = this.$refs.chat.nameChatAtual;
+                if(message.to != nameChatAtual)
+                    this.user.groups[message.to]["showPill"] = true;
+
                 this.user.groups[message.to].history.push(message); 
-                this.user.groups[message.to].lastMessage = `${message.from}: ${message.message}`;
+                this.user.groups[message.to].lastMessage = `${message.from.charAt(0).toUpperCase() + message.from.slice(1)}: ${message.message}`;
                 this.user.groups[message.to].lastMessageDate = message.date;
             });
 
@@ -131,6 +146,7 @@ export default {
                 {
                     this.showToast("success", `Contato '${usernameContact}' adicionado!`);
                     this.user.contacts[usernameContact] = contact
+                    this.$refs.chat.inputTextNewContact = "";   
                     return; 
                 } 
 
@@ -139,8 +155,12 @@ export default {
 
 
 
-            this.socket.on(EVENTS.PUSH_GROUP, (groupname, imageUrl) => {
+            this.socket.on(EVENTS.PUSH_GROUP, (groupname, groupowner, imageUrl) => {
                 this.showToast('info', `Grupo '${groupname}' foi criado e você foi adicionado!`);
+
+                if(groupowner == this.user.username)
+                    document.getElementById("btnCloseModal").click();
+    
 
                 this.user.groups[groupname] = {
                     lastMessage:     "",
@@ -149,6 +169,13 @@ export default {
                     history:         []
                 }
             })
+
+            this.socket.on(EVENTS.GROUP_DELETED, groupname => {
+                delete this.user.groups[groupname];
+
+                this.$refs.chat.nameChatAtual = "";
+                this.showToast( 'info', `Grupo '${groupname} foi excluido!'` )
+            });
 
 
             this.socket.on(EVENTS.SHOW_TOAST, toast => { this.showToast( toast.type, toast.message ); });
@@ -174,31 +201,31 @@ export default {
           this.toastMessage = text;
           this.toastType    = type;
 
-          var toastElement = document.querySelector('.toast');
-          const toast = new Toast(toastElement);
-          toast.show();
+          this.createToast.show();
         },
 
         addNewContact(username){
             this.socket.emit(EVENTS.ADD_CONTACT, username);
         },
         
-        deleteContactOrGroup( name, chatType )
+        removeContactOrGroup( name, chatType )
         {
-            if (chatType == 'contacts')
-            {
-                this.socket.emit(EVENTS.REMOVE_CONTACT, name);
-            }
-            else
-            {
-                this.socket.emit(EVENTS.QUIT_GROUP, name);
-                // console.log("Delete group not allowed")
-            }
+            let Event = chatType == 'contacts' ? EVENTS.REMOVE_CONTACT : EVENTS.QUIT_GROUP;
+            
+            this.socket.emit(Event, name);
         },
 
         createGroup( groupname, imageUrl, selectedUsers )
         {
             this.socket.emit(EVENTS.CREATE_GROUP, groupname, imageUrl, selectedUsers)
+        },
+
+        deleteGroup ( groupname ){
+            this.socket.emit(EVENTS.DELETE_GROUP, groupname)
+        },
+
+        resetDatabase(){
+            this.socket.emit(EVENTS.RESET_DATABASE);
         }
 
     }

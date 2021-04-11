@@ -16,7 +16,7 @@
                     </div>
                     <div class="col-3 mb-3" v-for="n in 10" :key="n">
                         <label class="d-flex justify-content-center">
-                            <input type="radio" name="image-selector" v-model="imageUrl" :value="n" checked>
+                            <input type="radio" name="image-selector" v-model="imageUrl" :value="n">
                             <img class="image-responsive h-75 w-75" :src="require(`../assets/avatar_${n}.png`)">
                         </label>
                     </div>
@@ -39,19 +39,14 @@ export default {
     data() {
         return {
             inputTextUsername:  '',
-            imageUrl:           '1',
+            imageUrl:           '',
         }
     },
 
     methods: {
         handleSubmit()
         {
-            let inputUser = {
-                username: this.inputTextUsername,
-                imageUrl: this.imageUrl
-            }
-
-            this.$emit('userLoginSubmit', inputUser);
+            this.$emit('userLoginSubmit', { username: this.inputTextUsername, imageUrl: this.imageUrl });
         }
     }
 }

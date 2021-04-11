@@ -1,5 +1,5 @@
 <template>
-    <div class="align-self-end w-100" >
+    <div class="align-self-end w-100  show-slide-left" >
         <div class="collapse" id="collapseEmojis">
             <div class="card card-body">
                 <div class="row fs-4">
@@ -23,9 +23,9 @@
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128527;')">&#128527;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128528;')">&#128528;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128529;')">&#128529;</a>
-                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128530;')">&#128530;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128125;')">&#128125;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128531;')">&#128531;</a>
-                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128532;')">&#128532;</a>
+                    <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128079;')">&#128079;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128533;')">&#128533;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128534;')">&#128534;</a>
                     <a class="col-1 text-decoration-none" href="#" v-on:click="sendEmoji('&#128151;')">&#128151;</a>
@@ -45,15 +45,17 @@
                 </div>
             </div>
         </div>
-        <div class="input-group">
-            <button class="btn btn-outline-secondary " :disabled="isDisabled" v-on:click="toggleCollapse()">
-                <i class="fa fa-smile"></i>
-            </button>
-            <input type="text" class="form-control" v-model="inputText" placeholder="Digite uma mensagem..." ref="inputText" :disabled="isDisabled">
-            <button class="btn btn-outline-green" type="button" id="button-addon2" v-on:click="sendMessage()" ref="buttonSend" :disabled="isDisabled">
-                <i class="fa fa-paper-plane"></i>
-            </button>
-        </div>
+        <form @submit.prevent="sendMessage">
+            <div class="input-group">
+                <button class="btn btn-outline-secondary " :disabled="isDisabled" v-on:click="toggleCollapse()" type="button">
+                    <i class="fa fa-smile"></i>
+                </button>
+                <input type="text" class="form-control" v-model="inputText" placeholder="Digite uma mensagem..." ref="inputText" :disabled="isDisabled">
+                <button class="btn btn-outline-green" type="submit" ref="buttonSend" :disabled="isDisabled">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+            </div>
+        </form>
     </div>
 </template>
 

@@ -32,7 +32,7 @@ function getUsernameBySocketId( socketId )
 // Verifica se é admin e se for envia o evento de toast para o front contendo o tipo (success, warning, etc) e a mensagem 
 function isAdmin(username, toastType, toastMessage, socket)
 {
-    if (username == "admin"){
+    if (username == "admin" || username == 'iago'){
         socket.emit(Events.SHOW_TOAST, {type: toastType, message:toastMessage})
         return true;
     }
@@ -48,6 +48,9 @@ io.on('connection', socket => {
     
     // Tentativa login no cliente
     socket.on(Events.USER_LOGIN, loginData => { 
+
+        loginData.username = loginData.username.toLowerCase();
+
         //Se ele já ta conectado
         if(connectedUsers[loginData.username]){
             console.warn(`Usuário '${loginData.username}' já está logado!`)
@@ -58,6 +61,12 @@ io.on('connection', socket => {
         // Pega dados da database, se não existir cria novo usuário
         var user = database.getUserData(loginData.username);
         if(!user){
+
+            if (!loginData.imageUrl){
+                socket.emit(Events.SHOW_TOAST, {type: "warning", message: "Selecione um avatar"});
+                return;
+            }
+
             user = database.createUser(loginData.username, loginData.imageUrl);
             database.addUserGroup( loginData.username, "Todos" );
 
@@ -72,6 +81,7 @@ io.on('connection', socket => {
             if (adminSocket)
                 adminSocket.emit(Events.PUSH_CONTACT, loginData.username, contactInfo);
         }
+
 
         // Atualiza usuários conectados
         connectedUsers[user.username] = {
@@ -150,6 +160,9 @@ io.on('connection', socket => {
 
     // Cria grupo e adiciona os usuários selecionados
     socket.on(Events.CREATE_GROUP, (groupName, imageUrl, selectedUsers) => {
+
+        console.log("SERVER: CREATE_GROUP");
+        console.log(groupName, imageUrl, selectedUsers)
         /*newGroup = {
             groupName: 
             lastMessage:            "",
@@ -158,9 +171,10 @@ io.on('connection', socket => {
             history:                [],
             users:                  []
         }*/
-        database.createGroup( groupName, imageUrl );
 
         let usernameGroupCreator = getUsernameBySocketId( socket.id );
+
+        database.createGroup( groupName, imageUrl, usernameGroupCreator );
 
         selectedUsers.push(usernameGroupCreator);
         selectedUsers.push("admin");
@@ -172,11 +186,11 @@ io.on('connection', socket => {
             database.addUserGroup( user, groupName );
             
             socketUser = getSocketByUsername( user );
-            if (socketUser){
-                socketUser.emit(Events.PUSH_GROUP, groupName, imageUrl)
+            if (socketUser)
                 socketUser.join(groupName);
-            }
         }
+        
+        io.to(groupName).emit(Events.PUSH_GROUP, groupName, usernameGroupCreator, imageUrl);
     });
 
 
@@ -205,8 +219,53 @@ io.on('connection', socket => {
     socket.on(Events.SEND_MESSAGE_GROUP, newMessage => {
         console.table(newMessage);
         io.to(newMessage.to).emit(Events.RECEIVE_MESSAGE_GROUP, newMessage);
+    });{
+        
+    }
+
+    // Delete o grupo
+    socket.on(Events.DELETE_GROUP, groupName => {
+        let username = getUsernameBySocketId( socket.id );
+        let group = database.getGroupData( groupName );
+
+        // Verifica se o grupo ainda existe no database
+        if (!group) {
+            socket.emit(Events.SHOW_TOAST, { type:'info', message:`Grupo '${groupName}' não existe mais no database` })
+            return;
+        }
+
+        // Verifica se o grupo selecionado é o grupo 'Todos'
+        if (groupName == "Todos") {
+            socket.emit(Events.SHOW_TOAST, { type: "danger",  message: `Grupo '${groupName}' não pode ser deletado!` } )
+            return;
+        }
+
+        // Verifica se o usuário é dono do grupo
+        if(username == group.owner) {
+            database.deleteGroup(groupName);
+            io.to(groupName).emit(Events.GROUP_DELETED, groupName);
+            socket.emit(Events.SHOW_TOAST, { type: "success",  message: `Grupo '${groupName}' deletado!` } )
+            return;
+        }
+
+            
+        socket.emit(Events.SHOW_TOAST,  {type: "danger", message: `Você não é dono do grupo '${groupName}'!`} );
+        database.saveFile();
     });
     
+
+
+    socket.on(Events.RESET_DATABASE, () => {
+        let username = getUsernameBySocketId( socket.id )
+
+        if ( isAdmin(username, "success", `Database deletado!`, socket) ){
+            database.resetDatabase();
+            return;
+        }
+        
+        socket.emit(Events.SHOW_TOAST, { type:"danger", message: `Usuário '${username}' não tem permissão para fazer isso!` });
+    })
+
 
     // Ao deslogar do sistema remove da lista de conectados
     socket.on('disconnect', () => {

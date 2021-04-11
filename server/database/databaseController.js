@@ -6,9 +6,9 @@ class JSONDatabaseController
     {  
         this.data = {};
         this.filePath = __dirname + filePath;
-        if(autoLoad){
+        
+        if(autoLoad)
             this.loadFile();
-        }
     }
 
     loadFile()
@@ -23,6 +23,10 @@ class JSONDatabaseController
 
     getUserData( username ) { return this.data.users[username]; }
 
+    getGroupData( groupName ) { 
+        console.log(`> Database: Retornando grupo '${groupName}'`);
+        return this.data.groups[groupName]; 
+    }
 
     createUser(username, imageUrl)
     {
@@ -54,11 +58,12 @@ class JSONDatabaseController
         this.saveFile();
     }
 
-    createGroup( groupName, imageUrl )
+    createGroup( groupName, imageUrl, ownerUsername = "admin" )
     {
         console.log(`> Database: Grupo '${groupName}' criado com avatar '${imageUrl}'`)
 
         this.data.groups[groupName] = {
+            owner:                  ownerUsername,
             lastMessage:            "",
             lastMessageDate:        "",
             imageUrl:               imageUrl,
@@ -98,6 +103,11 @@ class JSONDatabaseController
 
         if (userIndex != -1){
             this.data.groups[groupName].users.splice(userIndex, 1);
+
+            if(this.data.groups[groupName].users.length <= 1)
+                delete this.data.groups[groupName];
+            
+            
             this.saveFile();
             return;
         }
@@ -105,12 +115,24 @@ class JSONDatabaseController
         console.log(`> Database: Usuário '${username}' não está no grupo '${groupName}'`)
     }
 
-    
+    deleteGroup( groupName )
+    {
+        for(var username of this.data.groups[groupName].users)
+            delete this.data.users[username].groups[groupName];
+        
+        delete this.data.groups[groupName];
 
-    // cria um grupo
-    // ele adiciona o grupo no banco
-    // adiciona o usuario no grupo
-    // adiciona o grupo nos usuarios do grupo
+        this.saveFile();
+    }
+    
+    resetDatabase()
+    {
+        let databaseTemplatePath = __dirname + '/_databaseTemplate.json';
+        let template = JSON.parse(fs.readFileSync(databaseTemplatePath));
+
+        this.data = template
+        this.saveFile();
+    }
 }
 
 module.exports = JSONDatabaseController;

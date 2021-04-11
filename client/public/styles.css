@@ -1,6 +1,115 @@
+
+.chat-message + .chat-message .message-date{
+  display: none;
+}
+
+.button-options:hover {
+  opacity: 0.8;
+  color: gray;
+}
+
+.show-fade{
+  animation: show .5s;
+}
+
+@keyframes show {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
+.show-slide-right {
+  animation: show-slide-right .5s;
+}
+
+@keyframes show-slide-right {
+  0% {
+    opacity: 0%;
+    transform: translate(10px, 0px);
+  }
+  100% {
+    opacity: 100%;
+    transform: none;
+  }
+}
+
+.show-slide-left {
+  animation: show-slide-left .5s;
+}
+
+@keyframes show-slide-left {
+  0% {
+    opacity: 0%;
+    transform: translate(-10px, 0px);
+  }
+  100% {
+    opacity: 100%;
+    transform: none;
+  }
+}
+
 .active-chat {
   border-left: 6px solid #2a9d8f;
 }
+
+.chat-pill {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 100%;
+  }
+  
+  70% {
+    opacity: 35%;
+  }
+  
+  100% {
+    opacity: 50%;
+  }
+}
+
+.messsage-emoji {
+  animation: pulse-grow-container 1s infinite ease-in-out;
+}
+
+@keyframes pulse-grow-container {
+  0% {
+    transform: scale(1);
+  }
+  
+  100% {
+    transform: scale(.7);
+  }
+}
+
+.message-emoji span {
+  display: inline-block;
+  animation: pulse-grow 1s infinite ease-in-out;
+}
+
+@keyframes pulse-grow {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+  
+  100% {
+    transform: scale(1);
+  }
+}
+
+.chat-contact{
+  transition: all .125s;
+}
+
 
 .chat-contact:hover {
   cursor: pointer;

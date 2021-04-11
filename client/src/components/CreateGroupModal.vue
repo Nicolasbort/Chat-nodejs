@@ -15,14 +15,14 @@
                     </div>
                     <div class="col-2 mb-3" v-for="n in 6" :key="n">
                         <label class="d-flex justify-content-center">
-                            <input type="radio" name="icon-selector" v-model="imageUrl" :value="n" checked>
+                            <input type="radio" name="icon-selector" v-model="imageUrl" :value="n">
                             <img class="image-responsive h-75 w-75" :src="require(`../assets/group_${n}.png`)">
                         </label>
                     </div>
                 </div>
 
                 <h5 class=" text-center text-green">Selecione os Membros</h5>
-                {{selectedContacts}}
+
 
                 <ul class="list-group flex-fill overflow-auto mh-100">
                     <li 
@@ -44,7 +44,7 @@
                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCloseModal">Close</button>
                 <button type="button" v-on:click="checkGroupInformation" class="btn btn-outline-green">Criar</button>
             </div>
             </div>
@@ -87,13 +87,17 @@ export default {
 
         checkGroupInformation()
         {
-            if ( !this.groupname )
+            if ( !this.groupname || !this.imageUrl )
             {
-                this.$parent.showToast('info', 'Insira um nome de grupo')
+                this.$parent.showToast('info', 'Insira um nome de grupo e um icone')
                 return;
             }
 
             this.$emit("createGroup", this.groupname, this.imageUrl, this.selectedContacts);
+
+            // this.groupname        = "";
+            // this.imageUrl         = "";
+            // this.selectedContacts = [];
         }
     }
 }

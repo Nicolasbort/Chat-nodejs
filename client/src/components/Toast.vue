@@ -1,5 +1,5 @@
 <template>
-    <div class="toast position-absolute fade align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast position-absolute fade align-items-center bg-white" role="alert" aria-live="assertive" aria-atomic="true">
         <div :class="`toast-header bg-${toastType} text-white`">
             <i :class="toastIcon"></i>
             <strong class="ms-3 me-auto">Aviso</strong>
