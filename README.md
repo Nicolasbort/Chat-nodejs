@@ -34,9 +34,9 @@ em que é possível realizar comunicação privada, em grupo e com todos usuári
 `npm install`</br>
 `npm run serve`
 
-- Abra http://localhost:8080
+Abra http://localhost:8080
 
-### No outro temrminal
+### No outro terminal
 
 `cd server`</br>
 `npm install`</br>
