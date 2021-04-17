@@ -1,6 +1,6 @@
 # Chat Node.js
 
-Chat desenvolvido no período da pandemia com intuito de implementar uma comunicação cliente/servidor
+Chat desenvolvido no período da pandemia com intuito de implementar uma comunicação cliente-servidor
 em que é possível realizar comunicação privada, em grupo e com todos usuários conectados.
 
 | | |
