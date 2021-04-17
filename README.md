@@ -3,6 +3,13 @@
 Chat desenvolvido no período da pandemia com intuito de implementar uma comunicação cliente/servidor
 em que é possível realizar comunicação privada, em grupo e com todos usuários conectados.
 
+| | |
+|-|-|
+|![Tela inicial](docs/tela_inicial.png) | ![Chat inicial](docs/chat_inicial.png) |
+| ![Chat de grupo 'Todos'](docs/chat_todos.png)   | ![Criação de grupos](docs/grupo.png) |
+
+
+
 ## Desenvolvedores
 
 - Nicolas Bortoluzzi
