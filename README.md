@@ -12,8 +12,8 @@ em que é possível realizar comunicação privada, em grupo e com todos usuári
 
 ## Desenvolvedores
 
-- Nicolas Bortoluzzi
-- Iago Almeida
+- [Nicolas Bortoluzzi](https://github.com/Nicolasbort)
+- [Iago Almeida](https://github.com/iagobalmeida)
 
 ## Tecnologias Usadas
 
@@ -23,21 +23,27 @@ em que é possível realizar comunicação privada, em grupo e com todos usuári
 
 ## Como Usar
 
-`git clone https://github.com/Nicolasbort/Chat-nodejs`</br>
-`cd Chat-nodejs`
+```
+git clone https://github.com/Nicolasbort/Chat-nodejs
+cd Chat-nodejs
+```
 
 - Abra dois terminais
 
-### Em um terminal
+### Rodando o Client
 
-`cd client`</br>
-`npm install`</br>
-`npm run serve`
+```
+cd client
+npm install
+npm run serve
+```
 
 Abra http://localhost:8080
 
-### No outro terminal
+### Rodando o Server
 
-`cd server`</br>
-`npm install`</br>
-`npm run start`
+```
+cd server
+npm install
+npm run start
+```
